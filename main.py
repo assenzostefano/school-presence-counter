@@ -63,20 +63,32 @@ def presenza_giornaliera():
     try:
         now = datetime.datetime.now()
         now = now.strftime("%d/%m/%Y")
-        for i in range(1, 10):
-            if sheet.get_worksheet(0).cell(i,2).value == None:
-                sheet.get_worksheet(0).update_cell(i, 2, "1")
-                sheet.get_worksheet(0).update_cell(i, 1, now)
-                break
-            else:
-                continue
+        print(now)
+        datetime_obj = datetime.datetime.strptime(now, "%d/%m/%Y").strftime("%d %m %Y")
+        convert_date_to_day = datetime.datetime.strptime(datetime_obj, '%d %m %Y').strftime('%A')
+        if convert_date_to_day == "Saturday" or convert_date_to_day == "Sunday":
+            for i in range(1, 10):
+                if sheet.get_worksheet(0).cell(i,1).value == None:
+                    sheet.get_worksheet(0).update_cell(i, 2, "0")
+                    sheet.get_worksheet(0).update_cell(i, 1, now)
+                    bot.send_message(OWNER_BOT, "Oggi è sabato o domenica, non è necessario segnare la presenza")
+                    break
+                else:
+                    continue
+        else:
+            for i in range(1, 10):
+                if sheet.get_worksheet(0).cell(i,2).value == None:
+                    sheet.get_worksheet(0).update_cell(i, 2, "360")
+                    sheet.get_worksheet(0).update_cell(i, 1, now)
+                    break
+                else:
+                    continue
 
-        bot.send_message(720652561, "Presenza giornaliera segnata")
+            bot.send_message(OWNER_BOT, "Presenza giornaliera segnata")
     except:
-        bot.send_message(720652561, "Si è verificato un errore, riprova più tardi")
+        bot.send_message(OWNER_BOT, "Si è verificato un errore, riprova più tardi")
 
-#schedule.every().day.at("07:50").do(presenza_giornaliera)
-schedule.every().minute.do(presenza_giornaliera)
+schedule.every().day.at("07:50").do(presenza_giornaliera)
 
 while True:
     schedule.run_pending()
