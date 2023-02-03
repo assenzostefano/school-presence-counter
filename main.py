@@ -9,6 +9,7 @@ import os
 load_dotenv()
 SPREADSHEET_ID = os.getenv('SPREADSHEET_ID')
 BOT_TOKEN = os.getenv('BOT_TOKEN')
+OWNER_BOT = os.getenv('OWNER_BOT')
 
 bot = telebot.TeleBot(BOT_TOKEN)
 scopes = [
@@ -63,25 +64,20 @@ def presenza_giornaliera():
         now = datetime.datetime.now()
         now = now.strftime("%d/%m/%Y")
         for i in range(1, 10):
-            print(sheet.get_worksheet(0).cell(i,1).value)
-            if sheet.get_worksheet(0).cell(i,1).value == None:
-                print(i)
-                sheet.get_worksheet(0).update_cell(i, i, "1")
-                print("Presenza giornaliera segnata")
+            if sheet.get_worksheet(0).cell(i,2).value == None:
+                sheet.get_worksheet(0).update_cell(i, 2, "1")
+                sheet.get_worksheet(0).update_cell(i, 1, now)
                 break
             else:
                 continue
 
         bot.send_message(720652561, "Presenza giornaliera segnata")
-        print("Presenza giornaliera segnata")
     except:
-        print("Presenza giornaliera segnata")
-        #bot.send_message(720652561, "Si è verificato un errore, riprova più tardi")
+        bot.send_message(720652561, "Si è verificato un errore, riprova più tardi")
 
 #schedule.every().day.at("07:50").do(presenza_giornaliera)
-
+schedule.every().minute.do(presenza_giornaliera)
 
 while True:
-    #schedule.run_pending()
-    presenza_giornaliera()
+    schedule.run_pending()
     bot.polling()
