@@ -15,7 +15,7 @@ bot = telebot.TeleBot(BOT_TOKEN)
 scopes = [
 'https://www.googleapis.com/auth/spreadsheets',
 'https://www.googleapis.com/auth/drive'
-    ]
+]
 
 credentials = ServiceAccountCredentials.from_json_keyfile_name("token.json", scopes) #access the json key you downloaded earlier 
 file = gspread.authorize(credentials) # authenticate the JSON key with gspread
